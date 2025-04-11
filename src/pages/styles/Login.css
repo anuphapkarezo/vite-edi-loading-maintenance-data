@@ -1,0 +1,40 @@
+.login-container {
+    text-align: center;
+    position: absolute;
+    width: 100vw;
+    transform: translateY(60%);
+    margin: 0 auto;
+}
+
+
+.login-title {
+    color: rgb(0, 2, 15);
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 3px 3px 6px #e0f5fffe;
+}
+
+.login-subtitle {
+    color: rgb(0, 2, 15);
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    text-shadow: 3px 3px 6px #e0f5fffe;
+    margin-right: 2rem;
+    transform: translateX(9rem);
+}
+
+.login-logo {
+  /* transform: translate(1rem, -8px); */
+  transform: translate(37rem, -10px);
+}
+
+
+/* @media screen and (min-height: 1080px) {
+  .login-container {
+    transform: translate(-5%, 50%);
+  }
+} */
