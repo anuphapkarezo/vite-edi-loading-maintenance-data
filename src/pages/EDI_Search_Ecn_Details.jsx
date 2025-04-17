@@ -383,28 +383,28 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
       const ecn_details_string = ecn_details.join("\n");
   
       // const recipients = ["Anupab.K@th.fujikura.com"];
-      // const recipients = [
-      //   "PLANNER AYT",
-      //   "PLANNER KBN",
-      //   "PLANNER NVK",
-      //   "PLANNER PCN"
-      // ];
-      // const ccRecipients = ["Thongpan.S@th.fujikura.com"];
-      // const subject = selectedProduct + " : FPC SYSTEM COMPLETED LOADING AND REVISED ROUTING";
-      // const body = "DEAR ALL PLANNER, \n\n" +
-      //   "COMPLETED LOADING AND REVISED ROUTING FOR PRODUCT : " + selectedProduct + " \n\n" +
-      //   "ECN NO : \n" + 
-      //   ecn_no_string + " \n\n" +
-      //   "DETAILS : " + ecn_details_string + " \n\n" +
-      //   "PLANNING DIVISION. (SYSTEM TEAM)"
-      //   ;
+      const recipients = [
+        "PLANNER AYT",
+        "PLANNER KBN",
+        "PLANNER NVK",
+        "PLANNER PCN"
+      ];
+      const ccRecipients = ["Thongpan.S@th.fujikura.com"];
+      const subject = selectedProduct + " : FPC SYSTEM COMPLETED LOADING AND REVISED ROUTING";
+      const body = "DEAR ALL PLANNER, \n\n" +
+        "COMPLETED LOADING AND REVISED ROUTING FOR PRODUCT : " + selectedProduct + " \n\n" +
+        "ECN NO : \n" + 
+        ecn_no_string + " \n\n" +
+        "DETAILS : " + ecn_details_string + " \n\n" +
+        "PLANNING DIVISION. (SYSTEM TEAM)"
+        ;
     
-      // if (recipients.length > 0) {
-      //   const mailtoLink = `mailto:${recipients.join(",")}?cc=${ccRecipients.join(",")}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      //   window.location.href = mailtoLink;
-      // } else {
-      //   alert("No email recipients found.");
-      // }
+      if (recipients.length > 0) {
+        const mailtoLink = `mailto:${recipients.join(";")}?cc=${ccRecipients.join(";")}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
+      } else {
+        alert("No email recipients found.");
+      }
       ChkAlert = 0
     }
 
