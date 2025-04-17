@@ -389,7 +389,13 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
         "PLANNER NVK",
         "PLANNER PCN"
       ];
-      const ccRecipients = ["Thongpan.S@th.fujikura.com"];
+      // const ccRecipients = ["Thongpan.S@th.fujikura.com"];
+      const ccRecipients = [
+        "Thongpan.S@th.fujikura.com", 
+        "Anupab.K@th.fujikura.com", 
+        "rungtawan.r@th.fujikura.com", 
+        "napaporn.t@th.fujikura.com"
+      ];
       const subject = selectedProduct + " : FPC SYSTEM COMPLETED LOADING AND REVISED ROUTING";
       const body = "DEAR ALL PLANNER, \n\n" +
         "COMPLETED LOADING AND REVISED ROUTING FOR PRODUCT : " + selectedProduct + " \n\n" +
