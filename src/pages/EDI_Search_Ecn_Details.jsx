@@ -65,6 +65,7 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
   
   const [distinctEcnKpiDetails, setdistinctEcnKpiDetails] = useState([]);
   const [distinctSpecialList, setdistinctSpecialList] = useState([]);
+  const [distinctContPrdFixLT, setdistinctContPrdFixLT] = useState();
 
   const saveOptions = ["COMP" , "PROB"];
   const [selectedValue, setSelectedValue] = useState("");
@@ -95,6 +96,29 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
         }
         setRevSpecial(rev_special);
         setDateSpecial(date_special);
+
+        fetchContPrdFixLT();
+      }
+    } catch (error) {
+      console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
+    } finally {
+      setIsLoading(false); 
+    }
+  };
+
+  const fetchContPrdFixLT = async () => {
+    try {
+      setIsLoading(true);
+      if (selectedProduct == 'ALL PRODUCT') {
+        // alert("Please select at least 1 options");
+      } 
+      else {
+        const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-count-product-fix-leadtime?prd=${selectedProduct}`);
+        const count_prd = parseInt(response.data[0].count_prd, 10);
+        if (count_prd > 0) {
+          alert("THIS PRODUCT MUST BE FIXED LEADTIME");
+        }
+        setdistinctContPrdFixLT(count_prd);
       }
     } catch (error) {
       console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
@@ -378,6 +402,11 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
       setSelectedValue("")
       setCheckedValues({});
       fetchEcnKpiDetails();
+
+      if (distinctContPrdFixLT > 0) {
+        handleOpenFixLeadTime();
+        setdistinctContPrdFixLT();
+      }
   
       const ecn_no_string = ecn_no.join(", ");
       const ecn_details_string = ecn_details.join("\n");
@@ -533,6 +562,10 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
 
   const handleSendMail = () => {
     window.open('/EDI_Product_Wait_Confirm', '_blank');
+  };
+
+  const handleOpenFixLeadTime = () => {
+    window.open('http://10.17.66.242:8162/', '_blank');
   };
 
   return (
