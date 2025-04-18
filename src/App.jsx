@@ -10,6 +10,7 @@ import EDI_Product_Fix_Lead_Time from "./pages/EDI_Product_Fix_Lead_Time";
 import EDI_Upload_Ecn_Excel from "./pages/EDI_Upload_Ecn_Excel";
 import EDI_Search_Ecn_Details from "./pages/EDI_Search_Ecn_Details";
 import EDI_Product_Wait_Confirm from "./pages/EDI_Product_Wait_Confirm";
+import EDI_Product_Loading_Routing_Today from "./pages/EDI_Product_Loading_Routing_Today";
 
 export default function App() {
   
@@ -26,6 +27,7 @@ export default function App() {
               <Route path="/EDI_Upload_Ecn_Excel" element={<EDI_Upload_Ecn_Excel />}/>
               <Route path="/EDI_Search_Ecn_Details" element={<EDI_Search_Ecn_Details />}/>
               <Route path="/EDI_Product_Wait_Confirm" element={<EDI_Product_Wait_Confirm />}/>
+              <Route path="/EDI_Product_Loading_Routing_Today" element={<EDI_Product_Loading_Routing_Today />}/>
             </Route>
         </Routes>
   );

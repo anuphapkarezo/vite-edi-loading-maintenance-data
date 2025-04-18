@@ -159,6 +159,10 @@ export default function Navbar({ onToggle }) {
         setMenuName("PRODUCT WAITING PLANNER CONFIRM LOADING");
         setMenuIcon(<img src="/wait_confirm.png" alt="" width={30} />);
         break;
+      case "/EDI_Product_Loading_Routing_Today":
+        setMenuName("DAILY TREND LOADING ROUTING");
+        setMenuIcon(<img src="/time-line.png" alt="" width={30} />);
+        break;
       default:
         setMenuName("SMART EDI LOADING & MAINTENANCE ROUTING");
         setMenuIcon(<img src="/MainPage.png" alt="" width={30} />);
@@ -318,6 +322,45 @@ export default function Navbar({ onToggle }) {
                   </ListItemIcon>
                   <ListItemText
                     primary="SEARCH FUNCTION"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </div>
+
+          {/* EDI_Product_Loading_Routing_Today */}
+          <div className={`${getUserRoleNo === 2 || getUserRoleNo === 3 ? "hidden" : "block"}`}>
+            <List open={open}>
+              <ListItem
+                onClick={() => setMenuName("DAILY TREND LOADING ROUTING")}
+                disablePadding
+                sx={{ display: "block", color: "black" }}
+                component={Link}
+                to="/EDI_Product_Loading_Routing_Today"
+              >
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                      color: "inherit", // Set initial color
+                      "&:hover": {
+                        color: "primary.main", // Change color on hover
+                      },
+                    }}
+                  >
+                    <img src="/time-line.png" alt="" width={30} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="DAILY TREND"
                     sx={{ opacity: open ? 1 : 0 }}
                   />
                 </ListItemButton>
