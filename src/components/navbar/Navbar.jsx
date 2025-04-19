@@ -163,6 +163,10 @@ export default function Navbar({ onToggle }) {
         setMenuName("DAILY TREND LOADING ROUTING");
         setMenuIcon(<img src="/time-line.png" alt="" width={30} />);
         break;
+      case "/EDI_New_Product_Load_by_Month":
+        setMenuName("REPORT NEW PRODUCT FOR SEND TO COC");
+        setMenuIcon(<img src="/new-product.png" alt="" width={30} />);
+        break;``
       default:
         setMenuName("SMART EDI LOADING & MAINTENANCE ROUTING");
         setMenuIcon(<img src="/MainPage.png" alt="" width={30} />);
@@ -361,6 +365,45 @@ export default function Navbar({ onToggle }) {
                   </ListItemIcon>
                   <ListItemText
                     primary="DAILY TREND"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </div>
+
+          {/* EDI_New_Product_Load_by_Month */}
+          <div className={`${getUserRoleNo === 2 || getUserRoleNo === 3 ? "hidden" : "block"}`}>
+            <List open={open}>
+              <ListItem
+                onClick={() => setMenuName("REPORT NEW PRODUCT FOR SEND TO COC")}
+                disablePadding
+                sx={{ display: "block", color: "black" }}
+                component={Link}
+                to="/EDI_New_Product_Load_by_Month"
+              >
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                      color: "inherit", // Set initial color
+                      "&:hover": {
+                        color: "primary.main", // Change color on hover
+                      },
+                    }}
+                  >
+                    <img src="/new-product.png" alt="" width={30} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="NEW PRODUCT"
                     sx={{ opacity: open ? 1 : 0 }}
                   />
                 </ListItemButton>

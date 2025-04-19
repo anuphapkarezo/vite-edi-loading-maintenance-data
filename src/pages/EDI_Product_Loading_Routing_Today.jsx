@@ -77,8 +77,6 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
         const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-product-daily-trend-loading-routing-chart`);
         const data  = response.data;
         setdistinctDailytrend(data);
-        console.log('distinctDailytrend' , distinctDailytrend);
-        
       } catch (error) {
         console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
       } finally {
@@ -163,14 +161,20 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
         width: 1,
         colors: ['#DBDBDB'], // 👈 black border
       },
+      tooltip: {
+        y: {
+          formatter: (val) => `${val} Product`,
+        },
+      },
     };
-  
+    // const totalLoad = distinctDailytrend.reduce((sum, item) => sum + Number(item.count_date), 0);
     const chartSeries = [
       {
-        name: 'Product :',
+        name: `Load `,
         data: distinctDailytrend.map(item => Number(item.count_date)),
       },
     ];
+    
 
     const exportToExcel = async () => {
       if (distinctPrdLoadToday.length === 0) {
@@ -185,7 +189,7 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
   
       // Define headers
       const headers = [
-          'No.', 'DATE', 'CASE', 'EDI NUMBER', 'PRODUCT', 'DETAIL OF REVISED',
+          'No.', 'DATE', 'CASE', 'ECN NUMBER', 'PRODUCT', 'DETAIL OF REVISED',
       ];
   
       // Add headers to the worksheet
@@ -303,7 +307,7 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
             >
                 <img src="/refresh.png" alt="" style={{ width: 50}} />
             </Button> */}
-            <div style={{height: 360, width:1350, display: "flex", flexDirection: "row",}}>
+            <div style={{height: 360, width:1400, display: "flex", flexDirection: "row",}}>
 
               <div style={{
                         height: 350, 
@@ -318,7 +322,7 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
               {isLoading ? (
                 <Custom_Progress />
               ) : (
-                  <table style={{width:1300 , borderCollapse: 'collapse',}}>
+                  <table style={{width:1275 , borderCollapse: 'collapse',}}>
                     <thead style={{fontSize: 14, fontWeight: 'bold', position: 'sticky', top: 0, zIndex: 1, }}>
                       <tr>
                       <th
@@ -454,13 +458,13 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
                   className="btn_hover"
                   onClick={handleRefresh}
               >
-                  <img src="/refresh.png" alt="" style={{ width: 60}} />
+                  <img src="/refresh.png" alt="" style={{ width: 60, marginLeft: 10}} />
               </Button>
               <Button 
                   className="btn_hover"
                   onClick={exportToExcel}
               >
-                  <img src="/excel.png" alt="" style={{ width: 60}} />
+                  <img src="/excel.png" alt="" style={{ width: 60, marginLeft: 10}} />
               </Button>
             </div>
           </div>

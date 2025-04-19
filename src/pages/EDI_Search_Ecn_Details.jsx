@@ -425,7 +425,7 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
         "rungtawan.r@th.fujikura.com", 
         "napaporn.t@th.fujikura.com"
       ];
-      const subject = selectedProduct + " : FPC SYSTEM COMPLETED LOADING AND REVISED ROUTING";
+      const subject = "[AUTO MAIL] : " + selectedProduct + " : FPC SYSTEM COMPLETED LOADING AND REVISED ROUTING";
       const body = "DEAR ALL PLANNER, \n\n" +
         "COMPLETED LOADING AND REVISED ROUTING FOR PRODUCT : " + selectedProduct + " \n\n" +
         "ECN NO : \n" + 
