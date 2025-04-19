@@ -316,7 +316,7 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
           return;
         }
 
-        if (valueFor_re_cal === "") {
+        if (row.fac_item !== "9V" && valueFor_re_cal === "") {
           alert("PLEASE CHECK LIST FOR RE-CALCULATE.");
           return;
         }
