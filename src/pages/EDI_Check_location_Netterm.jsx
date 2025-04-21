@@ -58,6 +58,32 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
 
     const [selectedFromDate, setSelectedFromDate] = useState(null);
     const [selectedToDate, setSelectedToDate] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const [distinctProduct, setdistinctProduct] = useState([]);
+    const [distinctProductCheck, setdistinctProductCheck] = useState([]);
+
+    const fromDate = selectedFromDate ? dayjs(selectedFromDate).format('DD/MM/YYYY') : null;
+    const toDate = selectedToDate ? dayjs(selectedToDate).format('DD/MM/YYYY') : null;
+    const productName = selectedProduct ? selectedProduct.prd_name : 'ALL PRODUCT';
+
+    const fetchProductList = async () => {
+        try {
+
+          if (fromDate !== null && toDate !== null){
+            const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-product-list-check-location?start_date=${fromDate}&end_date=${toDate}`);
+            const data  = response.data;
+            // console.log('data' , data);
+            setdistinctProduct(data);
+          }
+        } catch (error) {
+          console.error(`Error fetching distinct data Product List: ${error}`);
+        }
+    };
+
+    useEffect(() => {
+        fetchProductList();
+    }, [selectedFromDate, selectedToDate, selectedProduct]);
 
     const handleNavbarToggle = (openStatus) => {
         setIsNavbarOpen(openStatus);
@@ -66,28 +92,63 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
     const handleFromDateChange = (newValue) => {
       setSelectedFromDate(newValue);
       setSelectedToDate(null)
+      setSelectedProduct(null)
+      setdistinctProduct([])
     }
 
     const handleToDateChange = (newValue) => {
       setSelectedToDate(newValue);
     }
 
-    const handleSearch = () => {
-      const fromDate = selectedFromDate ? dayjs(selectedFromDate).format('DD/MM/YYYY') : null;
-      const toDate = selectedToDate ? dayjs(selectedToDate).format('DD/MM/YYYY') : null;
-      console.log('fromDate' , fromDate);
-      console.log('toDate' , toDate);
+    const handleProductChange = (event, newValue) => {
+      setSelectedProduct(newValue);
+    }
+    
+
+    const handleSearch = async () => {
+      // console.log('fromDate' , fromDate);
+      // console.log('toDate' , toDate);
+      // console.log('productName' , productName);
+      if (fromDate === null && toDate === null){
+        alert("WARNING: PLEASE SELECT RANGE DATE.");
+        return;
+      }
+      if (fromDate === null){
+        alert("WARNING: PLEASE SELECT FROM DATE.");
+        return;
+      }
+      if (toDate === null){
+        alert("WARNING: PLEASE SELECT TO DATE.");
+        return;
+      }
+
       if (toDate < fromDate) {
         alert("WARNING: TO DATE CAN'T BE EARLIER THAN FROM DATE.");
         setSelectedFromDate(null)
         setSelectedToDate(null)
         return;
       }
+
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `http://10.17.100.115:3001/api/smart_edi/filter-check-location-netterm?start_date=${fromDate}&to_date=${toDate}&prd_name=${productName}`
+        );
+        const data = response.data;
+        setdistinctProductCheck(data);
+      } catch (error) {
+        console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
+      } finally {
+        setIsLoading(false); 
+      }
     };
 
     const handleClear = () => {
       setSelectedFromDate(null)
       setSelectedToDate(null)
+      setSelectedProduct(null)
+      setdistinctProduct([])
+      setdistinctProductCheck([])
     };
 
     return (
@@ -120,6 +181,39 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
                       />
                   </DemoContainer>
               </LocalizationProvider>
+              <Autocomplete
+                  disablePortal
+                  options={distinctProduct}
+                  getOptionLabel={(option) => (option ? String(option.prd_name) : '')}
+                  value={selectedProduct}
+                  onChange={handleProductChange}
+                  sx={{
+                          width: 230 , 
+                          marginLeft: 2 , 
+                          marginTop: 1 ,
+                          // backgroundColor: '#E8F9FF', 
+                          borderRadius: 3, 
+                          '& .MuiOutlinedInput-root': {
+                              textAlign: 'left', // Aligns input text center
+                              '& input': {
+                                  textAlign: 'left', // Ensures the typed or selected value is centered
+                              },
+                          },
+                      }}
+                  isOptionEqualToValue={(option, value) => option.prd_name === value.prd_name}
+                  renderInput={(params) => (
+                      <TextField
+                          {...params}
+                          label="PRODUCT NAME"
+                          variant="outlined"
+                          InputProps={{
+                              ...params.InputProps,
+                              sx: { border: 'none', boxShadow: 'none', color: 'blue'}, // Removes border and sets font color
+                          }}
+                          // sx={{ '& .MuiInputBase-input': { color: 'blue', fontSize: 18, textAlign: 'left', } }} // Ensures input text is blue
+                      />
+                  )}
+              />
               <Button 
                   className="btn_hover"
                   onClick={handleSearch}
@@ -136,7 +230,7 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
 
             <div style={{
                         height: 680, 
-                        width:1525 , 
+                        width:1645 , 
                         // marginRight: 20, 
                         marginTop: 5 ,
                         // marginBottom: 5,
@@ -147,7 +241,7 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
               {isLoading ? (
                 <Custom_Progress />
               ) : (
-                  <table style={{width:1500 , borderCollapse: 'collapse', }}>
+                  <table style={{width:1620 , borderCollapse: 'collapse', }}>
                     <thead style={{fontSize: 14, fontWeight: 'bold', position: 'sticky', top: 0, zIndex: 1, }}>
                       <tr>
                       <th
@@ -171,6 +265,18 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
                                 }}
                           >
                             PRODUCT
+                        </th>
+                        <th
+                          style={{
+                                textAlign: "center",
+                                backgroundColor: "#4D55CC",
+                                color: 'white',
+                                height: "45px",
+                                width: "60px",
+                                border: 'solid black 1px',
+                                }}
+                          >
+                            ITEM FPC
                         </th>
                         <th
                           style={{
@@ -219,6 +325,17 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
                                 }}
                           >
                             CHECK LOC. FPC
+                        </th>
+                        <th
+                          style={{
+                                textAlign: "center",
+                                backgroundColor: "#ECEFCA",
+                                height: "45px",
+                                width: "60px",
+                                border: 'solid black 1px',
+                                }}
+                          >
+                            ITEM SMT
                         </th>
                         <th
                           style={{
@@ -277,8 +394,8 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
                         </th>
                       </tr>
                     </thead>
-                  {/* <tbody style={{fontSize: 15}}>
-                    {distinctNewProduct.map((item, index) => (
+                  <tbody style={{fontSize: 16}}>
+                    {distinctProductCheck.map((item, index) => (
                       <tr key={index}>
                         <td style={{
                             border: 'solid black 1px',
@@ -288,51 +405,99 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
                             {index + 1}
                         </td>
                         <td style={{border: 'solid black 1px', 
-                                    textAlign: 'center',
+                                    textAlign: 'left',
+                                    paddingLeft : 10 ,
                                     height: "30px",
-                                  }}
-                            >
-                            {item.ecn_no || ""}
-                        </td>
-                        <td style={{border: 'solid black 1px', 
-                                    textAlign: 'center',
-                                  }}
-                            >
-                            {item.fac_item || ""}
-                        </td>
-                        <td style={{border: 'solid black 1px',
-                                    paddingLeft: 10,
                                   }}
                             >
                             {item.prd_name || ""}
                         </td>
-                        <td
-                            style={{ 
-                                border: 'solid black 1px', 
-                                paddingLeft: 10, 
-                                whiteSpace: 'nowrap', 
-                                overflow: 'hidden', 
-                                textOverflow: 'ellipsis', 
-                                maxWidth: '550px' ,
-                                cursor: item.ecn_details ? "pointer" : "default" ,
-                            }}
-                            onMouseDown={(e) => e.currentTarget.style.whiteSpace = "normal"}
-                            onMouseUp={(e) => e.currentTarget.style.whiteSpace = "nowrap"}
-                            onMouseLeave={(e) => e.currentTarget.style.whiteSpace = "nowrap"} // Reset if mouse leaves
+                        <td style={{border: 'solid black 1px', 
+                                    textAlign: 'center',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_loc === "OK" ? "#00FF9C" :
+                                                     item.check_loc === "NO" ? "#FFA55D" : "transparent",
+                                  }}
                             >
-                            {item.ecn_details?.replace(/[\r\n]+/g, " ") || ""}
+                            {item.item_type || ""}
+                        </td>
+                        <td style={{border: 'solid black 1px', 
+                                    textAlign: 'center',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_loc === "OK" ? "#00FF9C" :
+                                                     item.check_loc === "NO" ? "#FFA55D" : "transparent",
+                                  }}
+                            >
+                            {item.proc_disp || ""}
                         </td>
                         <td style={{border: 'solid black 1px',
                                     textAlign: 'center',
+                                    paddingLeft: 10,
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_loc === "OK" ? "#00FF9C" :
+                                                     item.check_loc === "NO" ? "#FFA55D" : "transparent",
                                   }}
                             >
-                            {item.issue_date || ""}
+                            {item.wc_rout || ""}
                         </td>
                         <td style={{border: 'solid black 1px',
+                                    textAlign: 'center',
+                                    paddingLeft: 10,
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_loc === "OK" ? "#00FF9C" :
+                                                     item.check_loc === "NO" ? "#FFA55D" : "transparent",
+                                  }}
+                            >
+                            {item.wc_netterm || ""}
+                        </td>
+                        <td style={{border: 'solid black 1px',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_loc === "OK" ? "#00FF9C" :
+                                                     item.check_loc === "NO" ? "#FFA55D" : "transparent",
+                                  }}
+                            >
+                            {item.check_loc || ""}
+                        </td>
+                        <td style={{border: 'solid black 1px',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_status === "OK" ? "#00FF9C" :
+                                    item.check_status === "NO" ? "#FFA55D" : "transparent",
                                     paddingLeft: 10,
                                   }}
                             >
-                            {item.eng_name || ""}
+                            {item.item_type_fg || ""}
+                        </td>
+                        <td style={{border: 'solid black 1px',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_status === "OK" ? "#00FF9C" :
+                                    item.check_status === "NO" ? "#FFA55D" : "transparent",
+                                  }}
+                            >
+                            {item.proc_disp_fg || ""}
+                        </td>
+                        <td style={{border: 'solid black 1px',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_status === "OK" ? "#00FF9C" :
+                                    item.check_status === "NO" ? "#FFA55D" : "transparent",
+                                  }}
+                            >
+                            {item.pt_loc || ""}
+                        </td>
+                        <td style={{border: 'solid black 1px',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_status === "OK" ? "#00FF9C" :
+                                    item.check_status === "NO" ? "#FFA55D" : "transparent",
+                                  }}
+                            >
+                            {item.loc_master || ""}
+                        </td>
+                        <td style={{border: 'solid black 1px',
+                                    textAlign: 'center',
+                                    backgroundColor: item.check_status === "OK" ? "#00FF9C" :
+                                                     item.check_status === "NO" ? "#FFA55D" : "transparent",
+                                  }}
+                            >
+                            {item.check_status || ""}
                         </td>
                         <td style={{border: 'solid black 1px',
                                     textAlign: 'center',
@@ -340,15 +505,9 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
                             >
                             {item.date_load_comp || ""}
                         </td>
-                        <td style={{border: 'solid black 1px',
-                                    textAlign: 'center',
-                                  }}
-                            >
-                            {item.month_load_comp || ""}
-                        </td>
                       </tr>
                     ))}
-                  </tbody> */}
+                  </tbody>
                 </table>
               )}
             </div>

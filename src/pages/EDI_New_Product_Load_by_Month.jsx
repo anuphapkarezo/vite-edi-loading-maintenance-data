@@ -145,7 +145,7 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
             );
             const data = response.data;
             setdistinctNewProduct(data);
-            console.log('distinctNewProduct:' , distinctNewProduct);
+            // console.log('distinctNewProduct:' , distinctNewProduct);
             
           } catch (error) {
             console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
