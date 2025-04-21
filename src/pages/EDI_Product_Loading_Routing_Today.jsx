@@ -341,11 +341,11 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
                                 textAlign: "center",
                                 backgroundColor: "#AED2FF",
                                 height: "45px",
-                                width: "100px",
+                                width: "130px",
                                 border: 'solid black 1px',
                                 }}
                           >
-                            DATE
+                            LOAD COMPLETE
                         </th>
                         <th
                           style={{
