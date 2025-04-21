@@ -261,7 +261,7 @@ export default function EDI_Product_Wait_Confirm({ onSearch }) {
                             "napaporn.t@th.fujikura.com"
                           ];
 
-      const subject ="[AUTO MAIL] : Product waiting planner confirm " + "(" + (DateSendMail) + ")";
+      const subject ="Product waiting planner confirm " + "(" + (DateSendMail) + ")";
       const body = "Dear All Planner, \n\n\n" +
         "                    Please be informed. \n" +
         "                    I'll to inform all of product waiting Planner confirm. \n" +

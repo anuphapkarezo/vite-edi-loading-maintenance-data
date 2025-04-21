@@ -132,7 +132,7 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
       const toDate = new Date(formattedTo.split('/').reverse().join('-'));     // "2025-01-31"
       if (toDate < fromDate) {
         // alert("Warning: 'ToMonth' cannot be earlier than 'FromMonth'.");
-        alert("WARNING: TO MONTH CAN'T BE EARLIER THAN TO MONTH.");
+        alert("WARNING: TO MONTH CAN'T BE EARLIER THAN FROM MONTH.");
         setSelectedFromMonth(null);
         setSelectedToMonth(null);
         return; // Exit function early
@@ -295,9 +295,9 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
       const ToMonth = selectedToMonth.month_year
       let SubjectName = ''
       if (FromMonth === ToMonth) {
-        SubjectName = `[AUTO MAIL] : New product of ${FromMonth}.`
+        SubjectName = `New product of ${FromMonth}.`
       } else {
-        SubjectName = `[AUTO MAIL] : New product of ${FromMonth}-${ToMonth}.`
+        SubjectName = `New product of ${FromMonth}-${ToMonth}.`
       }
 
       const recipients = [
