@@ -236,7 +236,7 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
                         // marginBottom: 5,
                         overflowY: 'auto', 
                         overflowX: 'hidden',
-                        border: 'solid black 1px',
+                        // border: 'solid black 1px',
                       }}>
               {isLoading ? (
                 <Custom_Progress />

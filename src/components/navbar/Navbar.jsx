@@ -171,6 +171,10 @@ export default function Navbar({ onToggle }) {
         setMenuName("CHECK LOCATION NETTERM");
         setMenuIcon(<img src="/shelf.png" alt="" width={30} />);
         break;``
+      case "/EDI_Product_Routing_List":
+        setMenuName("PRODUCT ROUTING LIST");
+        setMenuIcon(<img src="/list.png" alt="" width={30} />);
+        break;``
       default:
         setMenuName("SMART EDI LOADING & MAINTENANCE ROUTING");
         setMenuIcon(<img src="/MainPage.png" alt="" width={30} />);
@@ -453,6 +457,45 @@ export default function Navbar({ onToggle }) {
               </ListItem>
             </List>
           </div>
+
+          {/* EDI_Product_Routing_List */}
+          {/* <div className={`${getUserRoleNo === 2 || getUserRoleNo === 3 ? "hidden" : "block"}`}>
+            <List open={open}>
+              <ListItem
+                onClick={() => setMenuName("PRODUCT ROUTING LIST")}
+                disablePadding
+                sx={{ display: "block", color: "black" }}
+                component={Link}
+                to="/EDI_Product_Routing_List"
+              >
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                      color: "inherit", // Set initial color
+                      "&:hover": {
+                        color: "primary.main", // Change color on hover
+                      },
+                    }}
+                  >
+                    <img src="/list.png" alt="" width={30} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="ROUTING LIST"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </div> */}
 
           {/* EDI_Product_Special_List */}
           <div className={`${getUserRoleNo === 2 || getUserRoleNo === 3 ? "hidden" : "block"}`}>

@@ -13,6 +13,7 @@ import EDI_Product_Wait_Confirm from "./pages/EDI_Product_Wait_Confirm";
 import EDI_Product_Loading_Routing_Today from "./pages/EDI_Product_Loading_Routing_Today";
 import EDI_New_Product_Load_by_Month from "./pages/EDI_New_Product_Load_by_Month";
 import EDI_Check_location_Netterm from "./pages/EDI_Check_location_Netterm";
+import EDI_Product_Routing_List from "./pages/EDI_Product_Routing_List";
 
 export default function App() {
   
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="/EDI_Product_Loading_Routing_Today" element={<EDI_Product_Loading_Routing_Today />}/>
               <Route path="/EDI_New_Product_Load_by_Month" element={<EDI_New_Product_Load_by_Month />}/>
               <Route path="/EDI_Check_location_Netterm" element={<EDI_Check_location_Netterm />}/>
+              <Route path="/EDI_Product_Routing_List" element={<EDI_Product_Routing_List />}/>
             </Route>
         </Routes>
   );
