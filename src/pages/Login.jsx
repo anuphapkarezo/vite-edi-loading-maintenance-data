@@ -37,7 +37,7 @@ function LoginNew() {
           Swal.fire({
             icon: "success",
             title: "Login Success",
-            text: "Welcome to Dashboard Monitoring",
+            text: "Welcome to Smart EDI Loading & Maintenance Routing",
           });
           navigate("/home");
         } else {
