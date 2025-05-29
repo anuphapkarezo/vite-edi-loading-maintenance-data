@@ -1,40 +1,136 @@
-.login-container {
-    text-align: center;
-    position: absolute;
-    width: 100vw;
-    transform: translateY(60%);
-    margin: 0 auto;
+.login-bg {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e0f5ff 0%, #b3e0ff 100%);
 }
 
+.login-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 600px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.login-container {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.12);
+  padding: 30px 36px 32px 36px;
+  width: 500px;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.3s;
+  animation: login-fade-in-up 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
 .login-title {
-    color: rgb(0, 2, 15);
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    font-size: 2rem;
-    font-weight: bold;
-    text-shadow: 3px 3px 6px #e0f5fffe;
+  color: #4379F2;
+  font-size: 1.2rem;              
+  font-weight: 800;       
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;         
+  text-align: center;
+  /* text-shadow: 0 2px 12px #e0f5ff, 0 1px 0 #fff;  */
+  text-shadow: 0 2px 12px rgba(0, 198, 255, 0.3);
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  text-transform: uppercase;     
+  /* background: linear-gradient(90deg, #4379F2, #00C6FF); */
+  background: linear-gradient(90deg, #1A2980, #26D0CE);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3), 0 3px 15px rgba(26, 41, 128, 0.5);
+  -webkit-text-stroke: 0.5px #f0f8ff;
+  /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2), 0 2px 12px #e0f5ff;
+  -webkit-text-stroke: 0.5px #fff; */
 }
 
-.login-subtitle {
-    color: rgb(0, 2, 15);
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    font-size: 1rem;
-    font-weight: bold;
-    text-shadow: 3px 3px 6px #e0f5fffe;
-    margin-right: 2rem;
-    transform: translateX(9rem);
+.login-logo-main {
+  width: 400px;
+  /* margin: 10; */
+  /* margin-bottom: -1rem; */
+  /* margin: 0 auto -30px auto; */
 }
 
 .login-logo {
-  /* transform: translate(1rem, -8px); */
-  transform: translate(37rem, -10px);
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 10px auto 20px auto;
 }
 
+.login-subtitle {
+  color: #1976d2;
+  font-size: 0.75rem;           
+  font-weight: 600;
+  margin-bottom: 32px;
+  letter-spacing: 2px;          
+  text-align: center;
+  text-shadow: 0 1px 8px #e0f5ff;
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  text-transform: uppercase;    
+}
 
-/* @media screen and (min-height: 1080px) {
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.MuiTextField-root {
+  width: 100%;
+}
+
+/* ปรับตรงนี้! ให้ style ปุ่ม login มีผลเฉพาะใน login-container */
+.login-container .MuiButton-root {
+  width: 100%;
+  height: 46px;
+  font-size: 1.08rem;
+  border-radius: 10px;
+  margin-top: 10px;
+  background: #1976d2;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px 0 rgba(25, 118, 210, 0.10);
+}
+
+.login-container .MuiButton-root:hover {
+  background: #125ea2;
+}
+
+@media (max-width: 500px) {
   .login-container {
-    transform: translate(-5%, 50%);
+    width: 98vw;
+    padding: 24px 8px;
   }
+}
+
+@keyframes login-fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* .MuiFormLabel-asterisk {
+  display: none;
 } */
+ 

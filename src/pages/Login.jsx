@@ -1,32 +1,24 @@
-//* Login page component *//
-
-import "./styles/Login.css";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button, TextField } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FujiLogo from "../assets/FujiLogo.png";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import ClearAllIcon from '@mui/icons-material/ClearAll';
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
-import { Translate } from "@mui/icons-material";
-import { orange } from "@mui/material/colors";
-import system_update from "/system-update.jpg";
+import axios from "axios";
+import "./styles/Login.css";
+import { Link } from "react-router-dom";
 
-function Login() {
-  //*State for user login and password*//
+function LoginNew() {
+  const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [userLogin, setUserLogin] = useState("");
   const system_no = 9;
-
-  //*Navigate to home page*//
   const navigate = useNavigate();
 
-  //*Database for user login and password*//
-  const userDatabase = `http://10.17.100.115:3001/api/smart_edi/filter-user-login-smart-edi?user_login=${userLogin}&system_no=${system_no}`;
+  // const userDatabase = `http://10.17.100.115:3001/api/smart_planning/filter-user-login?user_login=${userLogin}`;
+  const userDatabase = `http://10.17.100.115:3001/api/smart_sus/filter-user-login-smart-sus?user_login=${userLogin}&system_no=${system_no}`;
 
-  //*Check user login and password in database*//
+
   const handleLogin = (event) => {
     event.preventDefault();
 
@@ -38,14 +30,14 @@ function Login() {
         if (
           data[0].user_login === userLogin &&
           data[0].user_password === password &&
-          data[0].system_no === 9
+          data[0]?.system_no === 7
         ) {
           localStorage.setItem("userToken", JSON.stringify(data[0]));
-          // console.log("Logged in successfully");
+          console.log("Logged in successfully");
           Swal.fire({
             icon: "success",
             title: "Login Success",
-            text: "Welcome to EDI Loading and Maintenance data",
+            text: "Welcome to Dashboard Monitoring",
           });
           navigate("/home");
         } else {
@@ -53,7 +45,7 @@ function Login() {
           Swal.fire({
             icon: "error",
             title: "Login Failed",
-            text: "Please check your username or password",
+            text: "Please check your username or password or permission",
           });
         }
       })
@@ -62,7 +54,7 @@ function Login() {
         Swal.fire({
           icon: "error",
           title: "User does not exist",
-          text: "Please check your username or password",
+          text: "Please check your username or password or permission",
         });
       });
   };
@@ -72,9 +64,7 @@ function Login() {
       "guestToken",
       JSON.stringify({
         user_login: "Guest",
-        role_type: "Guest",
-        system_no: 7,
-        role_no: 4,
+        user_role: "Guest",
       })
     );
     Swal.fire({
@@ -84,100 +74,82 @@ function Login() {
     });
   };
 
-  const handleClear = () => {
-    setUserLogin("")
-    setPassword("")
-  };
-
   return (
-    <>
-      <div className="container" style={{ height: '50vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="login-container h-fit" >
-          <div className="title-container flex justify-center">
-            <img
-              src={FujiLogo}
-              alt="fuji"
-              // className="login-logo"
-              style={{
-                width: 60,
-                margin: 10,
-              }}
-            />
-            <div>
-              <p className="login-title">SMART EDI LOADING & MAINTENANCE ROUTING</p>
-              <img
-                src={system_update}
-                alt="fuji"
-                className="login-logo"
-                style={{
-                  width: 150,
-                  margin: 10,
-                }}
-              />
-              {/* <p className="login-subtitle">SUS PLATE MANAGEMENT</p>
-               */}
-            </div>
-          </div>
-
-          <form onSubmit={handleLogin}>
-            <TextField
-              label="Username"
-              variant="standard"
-              margin="normal"
-              value={userLogin}
-              onChange={(event) => setUserLogin(event.target.value)}
-              style={{marginLeft: 50}}
-            />
-            <br />
-              <TextField
-                label="Password"
-                variant="standard"
-                margin="normal"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                style={{marginLeft: 50}}
-              />
-            <br />
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                // sx={{ m: 2 }}
-                style={{marginTop: 40 , marginLeft: 40 , width: 120 , height:40}}
-              >
-                Login <LockOpenOutlinedIcon sx={{ ml: 1 }} />
-              </Button>
-              {/* <Button
-                variant="contained"
-                onClick={handleClear}
-                style={{ marginTop: 40, marginLeft: 20 , backgroundColor:"#F97300" , width: 120 , height:40}}
-              >
-                Clear <ClearAllIcon sx={{ ml: 1 }} />
-              </Button> */}
-            <br />
-          </form>
-          {/* <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}>
-            <div style={{
-                width: 670,
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                fontSize: 20,
-                backgroundColor: 'orange',
-                marginTop: 20,
-            }}>
-                Noted : Shutdown Server 6/11/24, 06:00 PM - 7/11/24, 08:00 AM.
-            </div>
-          </div> */}
-        </div>
+    <div className="login-bg">
+      <div className="login-container">
+        <img src="/login-logo.png" alt="" className="login-logo"/>
+        {/* <p className="login-title">dashboard monitoring table</p> */}
+        <form onSubmit={handleLogin}>
+          <TextField
+            label="Username"
+            // placeholder="Username"
+            variant="outlined"
+            margin="normal"
+            value={userLogin}
+            onChange={(e) => setUserLogin(e.target.value)}
+            autoComplete="username"
+            fullWidth
+            required
+            InputProps={{
+              sx: {
+                color: 'blue', // สีตัวอักษรภายในช่องกรอก
+              },
+            }}
+          />
+          <TextField
+            label="Password"
+            // placeholder="Password"
+            variant="outlined"
+            margin="normal"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            fullWidth
+            required
+            InputProps={{
+              sx: {
+                color: 'blue', // สีตัวอักษรภายในช่องกรอก
+              },
+            }}
+          // InputLabelProps={{
+          //   sx: {
+          //     color: 'blue', // สีของ label (คำว่า Password)
+          //   },
+          // }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            sx={{ mt: 1 }}
+            disabled={loading}
+          >
+            Login <LockOpenOutlinedIcon sx={{ ml: 1 }} />
+          </Button>
+        </form>
       </div>
-    </>
+      {/* SVG wave background */}
+      <svg className="login-wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path
+          fill="#d0eaff"         // ฟ้าอ่อนมาก
+          fillOpacity="1"
+          d="M0,224 C360,320 1080,120 1440,224 L1440,320 L0,320 Z"
+        />
+        <path
+          fill="#a6d8fa"         // ฟ้าอ่อน
+          fillOpacity="0.8"
+          d="M0,256 C480,320 960,160 1440,256 L1440,320 L0,320 Z"
+        />
+        <path
+          fill="#7cc3f7"         // ฟ้ากลาง
+          fillOpacity="0.7"
+          d="M0,288 C600,340 840,180 1440,288 L1440,320 L0,320 Z"
+        />
+      </svg>
+    </div>
   );
 }
 
-export default Login;
+export default LoginNew;

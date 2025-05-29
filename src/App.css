@@ -1,8 +1,19 @@
-#root {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
+.MuiDataGrid-toolbarContainer {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.MuiDataGrid-toolbarContainer .MuiGrid-root {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  width: auto !important;
+  min-width: unset !important;
+  max-width: unset !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .logo {
