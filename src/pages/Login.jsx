@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import FujiLogo from "../assets/FujiLogo.png";
+import LoginLogo from "../assets/login-logo.png";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -77,7 +77,7 @@ function LoginNew() {
   return (
     <div className="login-bg">
       <div className="login-container">
-        <img src="/login-logo.png" alt="" className="login-logo"/>
+        <img src={LoginLogo} alt="LoginLogo" className="login-logo"/>
         {/* <p className="login-title">dashboard monitoring table</p> */}
         <form onSubmit={handleLogin}>
           <TextField
