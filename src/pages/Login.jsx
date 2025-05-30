@@ -12,11 +12,10 @@ function LoginNew() {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [userLogin, setUserLogin] = useState("");
-  const system_no = 9;
   const navigate = useNavigate();
 
   // const userDatabase = `http://10.17.100.115:3001/api/smart_planning/filter-user-login?user_login=${userLogin}`;
-  const userDatabase = `http://10.17.100.115:3001/api/smart_sus/filter-user-login-smart-sus?user_login=${userLogin}&system_no=${system_no}`;
+  const userDatabase = `http://10.17.100.115:3001/api/smart_edi/filter-user-login-smart-edi?user_login=${userLogin}`;
 
 
   const handleLogin = (event) => {
@@ -30,7 +29,7 @@ function LoginNew() {
         if (
           data[0].user_login === userLogin &&
           data[0].user_password === password &&
-          data[0]?.system_no === 7
+          data[0]?.system_no === 9
         ) {
           localStorage.setItem("userToken", JSON.stringify(data[0]));
           console.log("Logged in successfully");
