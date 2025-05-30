@@ -126,7 +126,7 @@ export default function Navbar({ onToggle }) {
   // const userGuestRole = userGuestObject?.role_type;
 
   //*Menu name ******************************************************
-
+  const [selectedMenu, setSelectedMenu] = React.useState("");
   const [menuName, setMenuName] = React.useState("Smart Waste Management");
   const [menuIcon, setMenuIcon] = React.useState(
     <img src="" alt="" width={30} />
@@ -142,10 +142,12 @@ export default function Navbar({ onToggle }) {
       case "/EDI_Product_Special_List":
         setMenuName("SPECIAL LIST MANUAL CIM ROUTING");
         setMenuIcon(<img src="/special.png" alt="" width={30} />);
+        setSelectedMenu("spe");
         break;
       case "/EDI_Product_Fix_Lead_Time":
         setMenuName("MASTER DATE FOR PRODUCT FIX LEAD TIME");
         setMenuIcon(<img src="/calendar.png" alt="" width={30} />);
+        setSelectedMenu("fix");
         break;
       case "/EDI_Upload_Ecn_Excel":
         setMenuName("UPLOAD DATA ECN FOR UPDATE DETAILS");
@@ -154,22 +156,27 @@ export default function Navbar({ onToggle }) {
       case "/EDI_Search_Ecn_Details":
         setMenuName("SEARCH HISTORY LOADING ROUTING FUNCTION");
         setMenuIcon(<img src="/save.png" alt="" width={30} />);
+        setSelectedMenu("ecn");
         break;
       case "/EDI_Product_Wait_Confirm":
         setMenuName("PRODUCT WAITING PLANNER CONFIRM LOADING");
         setMenuIcon(<img src="/wait_confirm.png" alt="" width={30} />);
+        setSelectedMenu("wait");
         break;
       case "/EDI_Product_Loading_Routing_Today":
         setMenuName("DAILY TREND LOADING ROUTING");
         setMenuIcon(<img src="/time-line.png" alt="" width={30} />);
+        setSelectedMenu("trend");
         break;
       case "/EDI_New_Product_Load_by_Month":
         setMenuName("REPORT NEW PRODUCT FOR SEND TO COC");
         setMenuIcon(<img src="/new-product.png" alt="" width={30} />);
+        setSelectedMenu("new");
         break;``
       case "/EDI_Check_location_Netterm":
         setMenuName("CHECK LOCATION NETTERM");
         setMenuIcon(<img src="/shelf.png" alt="" width={30} />);
+        setSelectedMenu("loc");
         break;``
       case "/EDI_Product_Routing_List":
         setMenuName("PRODUCT ROUTING LIST");
@@ -277,7 +284,7 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
                   }}
                 >
                   <ListItemIcon
@@ -316,13 +323,18 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
+                    border: selectedMenu === "ecn" ? "2px solid #1976d2" : "none", // เพิ่ม border เมื่อเลือก
+                    borderRadius: "8px", // Optional: เพิ่มความโค้งของขอบ
+                    backgroundColor: selectedMenu === "ecn" ? "#E3F2FD" : "transparent", // Optional: เพิ่มสีพื้นหลังขณะ active
+                    marginBottom: -1, // เพิ่มระยะห่างระหว่างรายการ
+                    marginTop: -0.6, // เพิ่มระยะห่างระหว่างรายการ
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      mr: open ? 3 : "auto",
+                      mr: open ? 1.5 : "auto",
                       justifyContent: "center",
                       color: "inherit", // Set initial color
                       "&:hover": {
@@ -355,13 +367,18 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
+                    border: selectedMenu === "trend" ? "2px solid #1976d2" : "none", // เพิ่ม border เมื่อเลือก
+                    borderRadius: "8px", // Optional: เพิ่มความโค้งของขอบ
+                    backgroundColor: selectedMenu === "trend" ? "#E3F2FD" : "transparent", // Optional: เพิ่มสีพื้นหลังขณะ active
+                    marginBottom: -1, // เพิ่มระยะห่างระหว่างรายการ
+                    // marginTop: -0.6, // เพิ่มระยะห่างระหว่างรายการ
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      mr: open ? 3 : "auto",
+                      mr: open ? 1.5 : "auto",
                       justifyContent: "center",
                       color: "inherit", // Set initial color
                       "&:hover": {
@@ -394,13 +411,18 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
+                    border: selectedMenu === "new" ? "2px solid #1976d2" : "none", // เพิ่ม border เมื่อเลือก
+                    borderRadius: "8px", // Optional: เพิ่มความโค้งของขอบ
+                    backgroundColor: selectedMenu === "new" ? "#E3F2FD" : "transparent", // Optional: เพิ่มสีพื้นหลังขณะ active
+                    marginBottom: -1, // เพิ่มระยะห่างระหว่างรายการ
+                    // marginTop: -0.6, // เพิ่มระยะห่างระหว่างรายการ
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      mr: open ? 3 : "auto",
+                      mr: open ? 1.5 : "auto",
                       justifyContent: "center",
                       color: "inherit", // Set initial color
                       "&:hover": {
@@ -433,13 +455,18 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
+                    border: selectedMenu === "loc" ? "2px solid #1976d2" : "none", // เพิ่ม border เมื่อเลือก
+                    borderRadius: "8px", // Optional: เพิ่มความโค้งของขอบ
+                    backgroundColor: selectedMenu === "loc" ? "#E3F2FD" : "transparent", // Optional: เพิ่มสีพื้นหลังขณะ active
+                    marginBottom: -1, // เพิ่มระยะห่างระหว่างรายการ
+                    // marginTop: -0.6, // เพิ่มระยะห่างระหว่างรายการ
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      mr: open ? 3 : "auto",
+                      mr: open ? 1.5 : "auto",
                       justifyContent: "center",
                       color: "inherit", // Set initial color
                       "&:hover": {
@@ -472,7 +499,7 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
                   }}
                 >
                   <ListItemIcon
@@ -511,13 +538,17 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
+                    border: selectedMenu === "spe" ? "2px solid #1976d2" : "none", // เพิ่ม border เมื่อเลือก
+                    borderRadius: "8px", // Optional: เพิ่มความโค้งของขอบ
+                    backgroundColor: selectedMenu === "spe" ? "#E3F2FD" : "transparent", // Optional: เพิ่มสีพื้นหลังขณะ active
+                    marginBottom: -1, // เพิ่มระยะห่างระหว่างรายการ
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      mr: open ? 3 : "auto",
+                      mr: open ? 1.5 : "auto",
                       justifyContent: "center",
                       color: "inherit", // Set initial color
                       "&:hover": {
@@ -550,13 +581,17 @@ export default function Navbar({ onToggle }) {
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    px: 2,
+                    border: selectedMenu === "fix" ? "2px solid #1976d2" : "none", // เพิ่ม border เมื่อเลือก
+                    borderRadius: "8px", // Optional: เพิ่มความโค้งของขอบ
+                    backgroundColor: selectedMenu === "fix" ? "#E3F2FD" : "transparent", // Optional: เพิ่มสีพื้นหลังขณะ active
+                    marginBottom: -1, // เพิ่มระยะห่างระหว่างรายการ
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      mr: open ? 3 : "auto",
+                      mr: open ? 1.5 : "auto",
                       justifyContent: "center",
                       color: "inherit", // Set initial color
                       "&:hover": {
