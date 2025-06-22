@@ -50,6 +50,14 @@ export default function EDI_Product_Routing_List({ onSearch }) {
     const [isNavbarOpen, setIsNavbarOpen] = React.useState(false);
 
     const [distinctPrdRoutList, setdistinctPrdRoutList] = useState([]);
+    const [distinctFactoryList, setdistinctFactoryList] = useState([]);
+
+    const [SelectedFactory, setSelectedFactory] = useState([]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [limit, setLimit] = useState(100); // Records per page
 
     const handleNavbarToggle = (openStatus) => {
         setIsNavbarOpen(openStatus);
@@ -64,7 +72,7 @@ export default function EDI_Product_Routing_List({ onSearch }) {
     };
 
     let cancelLoading = false;
-    const handleSearch = async () => {
+    const handleSearch_first = async () => {
       try {
         cancelLoading = false;
         setIsLoading(true);
@@ -88,153 +96,321 @@ export default function EDI_Product_Routing_List({ onSearch }) {
       }
     };
 
+    const fetchFactory = async () => {
+      try {
+        const response = await axios.get(
+          "http://10.17.100.115:3001/api/smart_edi/filter-factory-list-routing-list"
+        );
+        const data = response.data;
+        setdistinctFactoryList(data);
+      } catch (error) {
+        console.error(`Error fetching distinct data Period List: ${error}`);
+      }
+    };
+
+    const handleFactoryChange = (event, newValue) => {
+      setSelectedFactory(newValue);
+    };
+
+    useEffect(() => {
+      fetchFactory();
+      if (distinctPrdRoutList.length > 0) { // Only search if we have data already
+        setCurrentPage(1);
+        handleSearch(1, limit);
+      }
+    }, [limit]);
+
+    const handleSearch = async (page = 1, pageLimit = limit) => {
+      try {
+        // Check if at least one factory is selected
+        if (!SelectedFactory || SelectedFactory.length === 0) {
+          Swal.fire({
+            title: 'Factory Required',
+            text: 'Please select at least one factory to search',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
+
+        cancelLoading = false;
+        setIsLoading(true);
+        
+        // Build query parameters
+        // let queryParams = `page=${page}&limit=${limit}`;
+        let queryParams = `page=${page}&limit=${pageLimit}`;
+        
+        // Add factory filter
+        const factoryIds = SelectedFactory.map(factory => factory.factory_desc).join(',');
+        
+        queryParams += `&factories=${encodeURIComponent(factoryIds)}`;
+        
+        const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-prod-rout-list-new?${queryParams}`);
+        const data = response.data;
+        
+        // If using pagination response structure
+        if (data.pagination) {
+          setdistinctPrdRoutList(data.data);
+          setCurrentPage(data.pagination.currentPage);
+          setTotalPages(data.pagination.totalPages);
+          setTotalRecords(data.pagination.totalRecords);
+        } else {
+          // If backend returns direct array (fallback)
+          setdistinctPrdRoutList(data);
+        }
+        
+      } catch (error) {
+        console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
+        
+        // Handle specific error responses
+        if (error.response && error.response.status === 400) {
+          Swal.fire({
+            title: 'Factory Required',
+            text: error.response.data.message || 'Please select at least one factory to search',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'Failed to fetch data. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Update the exportToExcel function to also check for factory selection
+
     const handleClear = () => {
       cancelLoading = true; // Cancel ongoing chunk loading
       setdistinctPrdRoutList([]);
+      setSelectedFactory([]);
+      setCurrentPage(1); // Reset to first page
+      setTotalPages(1);  // Reset total pages to 1 (this will disable Next button)
+      setTotalRecords(0);   // Reset total records to 0
+      setLimit(100);        // Reset to default limit
     };
 
+    
+    const formatNumberWithCommas = (number) => {
+      return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+
+    // Add this function to your component
     const exportToExcel = async () => {
-      // if (distinctPrdRoutList.length === 0) {
-      //     alert("No data available to export.");
-      //     return;
-      // }
-
       try {
-        cancelLoading = false;
+        if (!SelectedFactory || SelectedFactory.length === 0) {
+          Swal.fire({
+            title: 'Factory Required',
+            text: 'Please select at least one factory to export',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
+
         setIsLoading(true);
-        const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-prod-rout-list`);
-        const data = response.data;
-        setdistinctPrdRoutList(data)
-        // const chunks = chunkArray(data, 500);
-        // let i = 0;
-        // const loadChunk = () => {
-        //   if (cancelLoading) return; // Stop loading if canceled
-        //   setdistinctPrdRoutList(prev => [...prev, ...chunks[i]]);
-        //   i++;
-        //   if (i < chunks.length) {
-        //     setTimeout(loadChunk, 0);
-        //   }
-        // };
-        // loadChunk();
-      } catch (error) {
-        console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
-      } finally {
-        setIsLoading(false); 
-      }
-
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('Summary Data');
-  
-      // Define headers
-      const headers = [
-          'ITEM TYPE', 'PRODUCT', 'CATEGORY', 'FACTORY', 'SEQ', 'UNIT', 'PROCESS', 'LT', 'WC', 'R/L', 'SHT-LOT', 'GATE',
-      ];
-  
-      // Add headers to the worksheet
-      const headerRow = worksheet.addRow(headers);
-      headerRow.height = 30;
-
-      const headerStyle = {
-        border: {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' }
-        },
-        fill: {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: '000000' } // Light blue fill DCE6F1
-        },
-        font: {
-            name: 'Calibri',
-            size: 8,
-            bold: true,
-            color: { argb: 'FFFFFF' },
-        },
-        alignment: {
-            horizontal: 'center',
-            vertical: 'middle',
-            wrapText: true
-        }
-      };
-
-      headerRow.eachCell((cell, colNumber) => {
-        cell.border = headerStyle.border;
-        cell.fill = headerStyle.fill;
-        cell.font = headerStyle.font;
-        cell.alignment = headerStyle.alignment;
-
-        if (colNumber === 2 || colNumber === 7) {
-          worksheet.getColumn(colNumber).width = 15; // DETAILS column
-        } else {
-          worksheet.getColumn(colNumber).width = 10; // DETAILS column
-        }
-      });
-
-      distinctPrdRoutList.forEach((agg_Row, index) => {
-        const row = [
-          agg_Row.item_type, 
-          agg_Row.prd_name, 
-          agg_Row.category, 
-          agg_Row.factory_desc,
-          agg_Row.seq,
-          agg_Row.unit_desc,
-          agg_Row.proc_disp,
-          agg_Row.lt_day,
-          agg_Row.wc,    
-          agg_Row.roll_lot,    
-          parseInt(agg_Row.sht_lot),
-          agg_Row.gate_proc
-        ];
-      
-        const excelRow = worksheet.addRow(row);
-      
-        const centerColumns = [2,7];
-        centerColumns.forEach(colIndex => {
-          excelRow.getCell(colIndex).alignment = { horizontal: 'middle', vertical: 'center' };
+        
+        // Show progress dialog
+        Swal.fire({
+          title: 'Exporting Data',
+          html: 'Fetching data...<br>Progress: <b>0%</b>',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
         });
-        // const fillColor = index % 2 === 0 ? 'D9D9D9' : 'FFFFFF';
-      
-        // Loop over each cell in the row
-        excelRow.eachCell((cell, colNumber) => {
-          cell.font = {
-            name: 'Calibri',
-            size: 8
-          };
 
-          cell.border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' }
-          };
+        const factoryIds = SelectedFactory.map(factory => factory.factory_desc).join(',');
+        const chunkSize = 10000; // Fetch 10k records at a time
+        let allData = [];
+        let page = 1;
+        let hasMoreData = true;
+        let totalRecords = 0;
 
+        // Fetch all data in chunks
+        while (hasMoreData) {
+          try {
+            const response = await axios.get(
+              `http://10.17.100.115:3001/api/smart_edi/filter-prod-rout-list-new?page=${page}&limit=${chunkSize}&factories=${encodeURIComponent(factoryIds)}`
+            );
+            
+            const data = response.data;
+            const records = data.data || data;
+            
+            if (records && records.length > 0) {
+              allData = [...allData, ...records];
+              
+              // Get total records from first response
+              if (page === 1 && data.pagination) {
+                totalRecords = data.pagination.totalRecords;
+              }
+              
+              // Update progress
+              const progress = totalRecords > 0 ? 
+                Math.round((allData.length / totalRecords) * 50) : // 50% for data fetching
+                Math.round((page * chunkSize / (allData.length + chunkSize)) * 50);
+              
+              Swal.update({
+                html: `Fetching data...<br>Progress: <b>${progress}%</b><br>Loaded: ${allData.length.toLocaleString()} records`
+              });
+              
+              page++;
+              
+              // Check if we have more data
+              if (data.pagination) {
+                hasMoreData = page <= data.pagination.totalPages;
+              } else {
+                hasMoreData = records.length === chunkSize;
+              }
+              
+              // Small delay to prevent server overload
+              await new Promise(resolve => setTimeout(resolve, 50));
+            } else {
+              hasMoreData = false;
+            }
+          } catch (error) {
+            console.error(`Error fetching chunk ${page}:`, error);
+            if (allData.length === 0) {
+              throw error; // If no data fetched at all, throw error
+            }
+            hasMoreData = false; // Continue with partial data
+          }
+        }
+
+        if (allData.length === 0) {
+          throw new Error('No data found to export');
+        }
+
+        // Update progress to show Excel generation
+        Swal.update({
+          html: `Generating Excel file...<br>Processing ${allData.length.toLocaleString()} records`
+        });
+
+        // Create Excel file using ExcelJS
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Product Routing List');
+
+        // Add headers
+        worksheet.columns = [
+          { header: 'No.', key: 'no', width: 5 },
+          { header: 'ITEM TYPE', key: 'item_type', width: 10 },
+          { header: 'PRODUCT', key: 'prd_name', width: 20 },
+          { header: 'CATEGORY', key: 'category', width: 10 },
+          { header: 'FACTORY', key: 'factory_desc', width: 10 },
+          { header: 'SEQ', key: 'seq', width: 10 },
+          { header: 'UNIT', key: 'unit_desc', width: 10 },
+          { header: 'PROCESS', key: 'proc_disp', width: 10 },
+          { header: 'LT', key: 'lt_day', width: 10 },
+          { header: 'WC', key: 'wc', width: 10 },
+          { header: 'R/L', key: 'roll_lot', width: 5 },
+          { header: 'SHT LOT', key: 'sht_lot', width: 10 },
+          { header: 'GATE', key: 'gate_proc', width: 10 }
+        ];
+
+        // Style headers - UPDATED SECTION
+        const headerRow = worksheet.getRow(1);
+        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+
+        // Apply background color only to columns 1-13 (header cells with content)
+        for (let col = 1; col <= 13; col++) {
+          const cell = headerRow.getCell(col);
           cell.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FFFFFF' }
+            fgColor: { argb: 'FF4D55CC' }
           };
+        }
 
-          if (colNumber === 12 && agg_Row.gate_proc === "Y") {
-            // Yellow highlight for the rest of the row
-            cell.fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFA55D' } // 00FF9C
-            };
-          }
+        // Add data in smaller chunks to prevent memory issues - UPDATED SECTION
+        const processingChunkSize = 5000;
+        for (let i = 0; i < allData.length; i += processingChunkSize) {
+          const chunk = allData.slice(i, i + processingChunkSize);
+          const rows = chunk.map((item, index) => ({
+            no: i + index + 1,
+            item_type: item.item_type || '',
+            prd_name: item.prd_name || '',
+            category: item.category || '',
+            factory_desc: item.factory_desc || '',
+            seq: item.seq || '',
+            unit_desc: item.unit_desc || '',
+            proc_disp: item.proc_disp || '',
+            lt_day: item.lt_day || '',
+            wc: item.wc || '',
+            roll_lot: item.roll_lot || '',
+            sht_lot: parseInt(item.sht_lot) || '',
+            gate_proc: item.gate_proc || ''
+          }));
+          
+          const addedRows = worksheet.addRows(rows);
+          
+          // Style GATE column cells with "Y" value - NEW SECTION
+          addedRows.forEach((row, rowIndex) => {
+            const gateCell = row.getCell('gate_proc'); // Column M (GATE)
+            if (gateCell.value === 'Y') {
+              gateCell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFA55D' } // Orange color same as table
+              };
+            }
+          });
+          
+          // Update progress (50% + processing progress)
+          const processingProgress = Math.round(((i + processingChunkSize) / allData.length) * 50);
+          Swal.update({
+            html: `Generating Excel file...<br>Progress: <b>${50 + Math.min(processingProgress, 50)}%</b>`
+          });
+          
+          // Allow UI to update
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        // Generate and download file
+        Swal.update({
+          html: 'Finalizing Excel file...<br>Almost done!'
         });
-      });
-      // Save the Excel file
-      const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, `FPC Product routing list.xlsx`);
-      setIsLoading(false); 
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { 
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        });
+        
+        // Create filename with format: ProductRoutingList_YYYYMMDD_HHMMSS.xlsx
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+        const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, ''); // HHMMSS
+        const fileName = `ProductRoutingList_${dateStr}_${timeStr}.xlsx`;
+
+        saveAs(blob, fileName);
+
+        Swal.fire({
+          title: 'Success!',
+          text: `Excel file with ${allData.length.toLocaleString()} records has been downloaded successfully`,
+          icon: 'success',
+          timer: 1500, // ปิดเองใน 1.5 วินาที
+          confirmButtonText: "OK",
+          showConfirmButton: false
+        });
+
+      } catch (error) {
+        console.error('Export error:', error);
+        Swal.fire({
+          title: 'Export Failed',
+          text: error.message || 'Failed to export data. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
+
 
     return (
         <>
@@ -243,6 +419,24 @@ export default function EDI_Product_Routing_List({ onSearch }) {
           {/* {/* <Box sx={{height: 600 , marginLeft: '60px'}}> */}
           <div style={{height: 750, width: 1800, marginLeft: '40px', }}>
             <div style={{height: 70, width: 1800, display: "flex", flexDirection: "row", }}>
+              <Autocomplete
+                multiple
+                disablePortal
+                // freeSolo
+                id="combo-box-demo-product"
+                size="medium"
+                options={distinctFactoryList}
+                getOptionLabel={(option) => option && option.factory_desc}
+                value={SelectedFactory}
+                onChange={handleFactoryChange}
+                sx={{ width: 450, height: 50, marginTop: 1, }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Factory" />
+                )}
+                isOptionEqualToValue={(option, value) =>
+                  option && value && option.factory_desc === value.factory_desc
+                }
+              />
               <Button 
                   className="btn_hover"
                   onClick={handleSearch}
@@ -258,14 +452,15 @@ export default function EDI_Product_Routing_List({ onSearch }) {
               <Button 
                   className="btn_hover"
                   onClick={exportToExcel}
+                  disabled={isLoading}
               >
                   <img src="/excel.png" alt="" style={{ width: 60}} />
               </Button>
             </div>
 
             <div style={{
-                        height: 680, 
-                        width:1275 , 
+                        height: 650, 
+                        width:1225 , 
                         // marginRight: 20, 
                         marginTop: 5 ,
                         // marginBottom: 5,
@@ -276,9 +471,21 @@ export default function EDI_Product_Routing_List({ onSearch }) {
               {isLoading ? (
                 <Custom_Progress />
               ) : (
-                  <table style={{width:1250 , borderCollapse: 'collapse', }}>
+                  <table style={{width:1200 , borderCollapse: 'collapse', }}>
                     <thead style={{fontSize: 16, fontWeight: 'bold', position: 'sticky', top: 0, zIndex: 1, }}>
                       <tr>
+                        <th
+                          style={{
+                                textAlign: "center",
+                                backgroundColor: "#4D55CC",
+                                color: 'white',
+                                height: "40px",
+                                width: "30px",
+                                border: 'solid white 1px',
+                                }}
+                          >
+                            No.
+                        </th>
                         <th
                           style={{
                                 textAlign: "center",
@@ -309,7 +516,7 @@ export default function EDI_Product_Routing_List({ onSearch }) {
                                 backgroundColor: "#4D55CC",
                                 color: 'white',
                                 height: "40px",
-                                width: "50px",
+                                width: "30px",
                                 border: 'solid white 1px',
                                 }}
                           >
@@ -432,6 +639,12 @@ export default function EDI_Product_Routing_List({ onSearch }) {
                                     textAlign: 'center',
                                   }}
                             >
+                            {index + 1}
+                        </td>
+                        <td style={{border: 'solid black 1px', 
+                                    textAlign: 'center',
+                                  }}
+                            >
                             {item.item_type || ""}
                         </td>
                         <td style={{border: 'solid black 1px', 
@@ -510,6 +723,82 @@ export default function EDI_Product_Routing_List({ onSearch }) {
                 </table>
               )}
             </div>
+            {/* Pagination Controls */}
+            <div style={{ 
+              width: 1225,
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              marginTop: '20px',
+              gap: '10px'
+            }}>
+              <button 
+                onClick={() => handleSearch(currentPage - 1)}
+                disabled={currentPage <= 1 || isLoading}
+                style={{
+                  padding: '8px 12px',
+                  backgroundColor: currentPage <= 1 ? '#ccc' : '#3674B5',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontWeight: 'bold',
+                  cursor: currentPage <= 1 ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {'<'}
+              </button>
+              
+              <span style={{ margin: '0 15px', fontSize: '16px' }}>
+                Page {formatNumberWithCommas(currentPage)} of {formatNumberWithCommas(totalPages)}
+                {/* Page {formatNumberWithCommas(currentPage)} of {formatNumberWithCommas(totalPages)} ({formatNumberWithCommas(totalRecords)} total records) */}
+              </span>
+              
+              <button 
+                onClick={() => handleSearch(currentPage + 1)}
+                disabled={currentPage >= totalPages || isLoading}
+                style={{
+                  padding: '8px 12px',
+                  backgroundColor: currentPage >= totalPages ? '#ccc' : '#3674B5',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontWeight: 'bold',
+                  cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {'>'}
+              </button>
+              
+              {/* Page size selector */}
+              <select 
+                value={limit} 
+                // onChange={async (e) => {
+                //   const newLimit = parseInt(e.target.value);
+                //   setLimit(newLimit);
+                //   setCurrentPage(1); // Reset to first page
+                //   await new Promise(resolve => setTimeout(resolve, 0));
+                //   handleSearch(1); // Load first page with new limit
+                // }}
+                onChange={(e) => {
+                  const newLimit = parseInt(e.target.value);
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                  // The useEffect will handle the search when limit changes
+                }}
+                style={{
+                  padding: '8px',
+                  marginLeft: '15px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc'
+                }}
+              >
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={200}>200</option>
+                <option value={500}>500</option>
+               </select>
+            </div>
+
           </div>
         </Box>
         </>

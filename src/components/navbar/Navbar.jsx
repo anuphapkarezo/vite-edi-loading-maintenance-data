@@ -486,7 +486,7 @@ export default function Navbar({ onToggle }) {
           </div>
 
           {/* EDI_Product_Routing_List */}
-          {/* <div className={`${getUserRoleNo === 2 || getUserRoleNo === 3 ? "hidden" : "block"}`}>
+          <div className={`${getUserRoleNo === 2 || getUserRoleNo === 3 ? "hidden" : "block"}`}>
             <List open={open}>
               <ListItem
                 onClick={() => setMenuName("PRODUCT ROUTING LIST")}
@@ -505,7 +505,7 @@ export default function Navbar({ onToggle }) {
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      mr: open ? 3 : "auto",
+                      mr: open ? 1.5 : "auto",
                       justifyContent: "center",
                       color: "inherit", // Set initial color
                       "&:hover": {
@@ -522,7 +522,7 @@ export default function Navbar({ onToggle }) {
                 </ListItemButton>
               </ListItem>
             </List>
-          </div> */}
+          </div>
 
           {/* EDI_Product_Special_List */}
           <div className={`${getUserRoleNo === 2 || getUserRoleNo === 3 ? "hidden" : "block"}`}>
