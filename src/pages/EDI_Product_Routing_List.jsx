@@ -108,9 +108,13 @@ export default function EDI_Product_Routing_List({ onSearch }) {
       }
     };
 
+    // const handleFactoryChange = (event, newValue) => {
+    //   setSelectedFactory(newValue);
+    // };
     const handleFactoryChange = (event, newValue) => {
-      setSelectedFactory(newValue);
+      setSelectedFactory(newValue ? [newValue] : []);
     };
+
 
     useEffect(() => {
       fetchFactory();
@@ -120,13 +124,78 @@ export default function EDI_Product_Routing_List({ onSearch }) {
       }
     }, [limit]);
 
+    // const handleSearch = async (page = 1, pageLimit = limit) => {
+    //   try {
+    //     // Check if at least one factory is selected
+    //     if (!SelectedFactory || SelectedFactory.length === 0) {
+    //       Swal.fire({
+    //         title: 'Factory Required',
+    //         text: 'Please select at least one factory to search',
+    //         icon: 'warning',
+    //         confirmButtonText: 'OK'
+    //       });
+    //       return;
+    //     }
+
+    //     cancelLoading = false;
+    //     setIsLoading(true);
+        
+    //     // Build query parameters
+    //     // let queryParams = `page=${page}&limit=${limit}`;
+    //     let queryParams = `page=${page}&limit=${pageLimit}`;
+        
+    //     // Add factory filter
+    //     const factoryIds = SelectedFactory.map(factory => factory.factory_desc).join(',');
+        
+    //     queryParams += `&factories=${encodeURIComponent(factoryIds)}`;
+        
+    //     const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-prod-rout-list-new?${queryParams}`);
+    //     const data = response.data;
+        
+    //     // If using pagination response structure
+    //     if (data.pagination) {
+    //       setdistinctPrdRoutList(data.data);
+    //       setCurrentPage(data.pagination.currentPage);
+    //       setTotalPages(data.pagination.totalPages);
+    //       setTotalRecords(data.pagination.totalRecords);
+    //     } else {
+    //       // If backend returns direct array (fallback)
+    //       setdistinctPrdRoutList(data);
+    //     }
+        
+    //   } catch (error) {
+    //     console.error(`Error fetching distinct data SUS Delivery order: ${error}`);
+        
+    //     // Handle specific error responses
+    //     if (error.response && error.response.status === 400) {
+    //       Swal.fire({
+    //         title: 'Factory Required',
+    //         text: error.response.data.message || 'Please select at least one factory to search',
+    //         icon: 'warning',
+    //         confirmButtonText: 'OK'
+    //       });
+    //     } else {
+    //       Swal.fire({
+    //         title: 'Error',
+    //         text: 'Failed to fetch data. Please try again.',
+    //         icon: 'error',
+    //         confirmButtonText: 'OK'
+    //       });
+    //     }
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // };
+
+    // Update the exportToExcel function to also check for factory selection
+
     const handleSearch = async (page = 1, pageLimit = limit) => {
       try {
-        // Check if at least one factory is selected
+        // Check if factory is selected
         if (!SelectedFactory || SelectedFactory.length === 0) {
           Swal.fire({
             title: 'Factory Required',
-            text: 'Please select at least one factory to search',
+            text: 'Please select a factory to search',
             icon: 'warning',
             confirmButtonText: 'OK'
           });
@@ -137,13 +206,12 @@ export default function EDI_Product_Routing_List({ onSearch }) {
         setIsLoading(true);
         
         // Build query parameters
-        // let queryParams = `page=${page}&limit=${limit}`;
         let queryParams = `page=${page}&limit=${pageLimit}`;
         
-        // Add factory filter
-        const factoryIds = SelectedFactory.map(factory => factory.factory_desc).join(',');
+        // Add factory filter - single factory
+        const factoryId = SelectedFactory[0].factory_desc;
         
-        queryParams += `&factories=${encodeURIComponent(factoryIds)}`;
+        queryParams += `&factories=${encodeURIComponent(factoryId)}`;
         
         const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-prod-rout-list-new?${queryParams}`);
         const data = response.data;
@@ -166,7 +234,7 @@ export default function EDI_Product_Routing_List({ onSearch }) {
         if (error.response && error.response.status === 400) {
           Swal.fire({
             title: 'Factory Required',
-            text: error.response.data.message || 'Please select at least one factory to search',
+            text: error.response.data.message || 'Please select a factory to search',
             icon: 'warning',
             confirmButtonText: 'OK'
           });
@@ -183,7 +251,6 @@ export default function EDI_Product_Routing_List({ onSearch }) {
       }
     };
 
-    // Update the exportToExcel function to also check for factory selection
 
     const handleClear = () => {
       cancelLoading = true; // Cancel ongoing chunk loading
@@ -217,16 +284,19 @@ export default function EDI_Product_Routing_List({ onSearch }) {
         
         // Show progress dialog
         Swal.fire({
+          icon: 'info',
           title: 'Exporting Data',
-          html: 'Fetching data...<br>Progress: <b>0%</b>',
+          // html: 'Fetching data...<br>Progress: <b>0%</b>',
+          html: 'Loading progress: <b>0%</b>',
           allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          }
+          showConfirmButton: false, // Hide OK 
+          // didOpen: () => {
+          //   Swal.showLoading();
+          // }
         });
 
         const factoryIds = SelectedFactory.map(factory => factory.factory_desc).join(',');
-        const chunkSize = 10000; // Fetch 10k records at a time
+        const chunkSize = 20000; // Fetch 10k records at a time
         let allData = [];
         let page = 1;
         let hasMoreData = true;
@@ -256,7 +326,10 @@ export default function EDI_Product_Routing_List({ onSearch }) {
                 Math.round((page * chunkSize / (allData.length + chunkSize)) * 50);
               
               Swal.update({
-                html: `Fetching data...<br>Progress: <b>${progress}%</b><br>Loaded: ${allData.length.toLocaleString()} records`
+                // html: `Fetching data...<br>Progress: <b>${progress}%</b><br>Loaded: ${allData.length.toLocaleString()} records`
+                html: `Loading progress: <b>${progress}%</b>`,
+                allowOutsideClick: false,
+                showConfirmButton: false, // Hide OK 
               });
               
               page++;
@@ -288,7 +361,10 @@ export default function EDI_Product_Routing_List({ onSearch }) {
 
         // Update progress to show Excel generation
         Swal.update({
-          html: `Generating Excel file...<br>Processing ${allData.length.toLocaleString()} records`
+          // html: `Generating Excel file...<br>Processing ${allData.length.toLocaleString()} records`
+          html: `Generating Excel file...`,
+          allowOutsideClick: false,
+          showConfirmButton: false, // Hide OK 
         });
 
         // Create Excel file using ExcelJS
@@ -364,7 +440,10 @@ export default function EDI_Product_Routing_List({ onSearch }) {
           // Update progress (50% + processing progress)
           const processingProgress = Math.round(((i + processingChunkSize) / allData.length) * 50);
           Swal.update({
-            html: `Generating Excel file...<br>Progress: <b>${50 + Math.min(processingProgress, 50)}%</b>`
+            // html: `Generating Excel file...<br>Progress: <b>${50 + Math.min(processingProgress, 50)}%</b>`
+            html: `Generating Excel file...`,
+            allowOutsideClick: false,
+            showConfirmButton: false, // Hide OK 
           });
           
           // Allow UI to update
@@ -373,7 +452,9 @@ export default function EDI_Product_Routing_List({ onSearch }) {
 
         // Generate and download file
         Swal.update({
-          html: 'Finalizing Excel file...<br>Almost done!'
+          html: 'Finalizing Excel file...',
+          allowOutsideClick: false,
+          showConfirmButton: false, // Hide OK 
         });
 
         const buffer = await workbook.xlsx.writeBuffer();
@@ -385,13 +466,14 @@ export default function EDI_Product_Routing_List({ onSearch }) {
         const now = new Date();
         const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
         const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, ''); // HHMMSS
-        const fileName = `ProductRoutingList_${dateStr}_${timeStr}.xlsx`;
+        const fileName = `ProductRoutingList(${encodeURIComponent(factoryIds)})_${dateStr}${timeStr}.xlsx`;
 
         saveAs(blob, fileName);
 
         Swal.fire({
           title: 'Success!',
-          text: `Excel file with ${allData.length.toLocaleString()} records has been downloaded successfully`,
+          // text: `Excel file with ${allData.length.toLocaleString()} records has been downloaded successfully`,
+          text: `Excel file has been downloaded successfully`,
           icon: 'success',
           timer: 1500, // ปิดเองใน 1.5 วินาที
           confirmButtonText: "OK",
@@ -411,7 +493,6 @@ export default function EDI_Product_Routing_List({ onSearch }) {
       }
     };
 
-
     return (
         <>
         <Navbar onToggle={handleNavbarToggle}/>  
@@ -419,8 +500,8 @@ export default function EDI_Product_Routing_List({ onSearch }) {
           {/* {/* <Box sx={{height: 600 , marginLeft: '60px'}}> */}
           <div style={{height: 750, width: 1800, marginLeft: '40px', }}>
             <div style={{height: 70, width: 1800, display: "flex", flexDirection: "row", }}>
-              <Autocomplete
-                multiple
+              {/* <Autocomplete
+                // multiple
                 disablePortal
                 // freeSolo
                 id="combo-box-demo-product"
@@ -436,7 +517,24 @@ export default function EDI_Product_Routing_List({ onSearch }) {
                 isOptionEqualToValue={(option, value) =>
                   option && value && option.factory_desc === value.factory_desc
                 }
+              /> */}
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo-product"
+                size="medium"
+                options={distinctFactoryList}
+                getOptionLabel={(option) => option?.factory_desc || ''}
+                value={SelectedFactory.length > 0 ? SelectedFactory[0] : null}
+                onChange={handleFactoryChange}
+                sx={{ width: 150, height: 50, marginTop: 1, }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Factory" />
+                )}
+                isOptionEqualToValue={(option, value) =>
+                  option && value && option.factory_desc === value.factory_desc
+                }
               />
+
               <Button 
                   className="btn_hover"
                   onClick={handleSearch}
