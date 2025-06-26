@@ -178,7 +178,12 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
 
     const exportToExcel = async () => {
       if (distinctPrdLoadToday.length === 0) {
-          alert("No data available to export.");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: "NO DATA AVAILABLE TO EXPORT.",
+            confirmButtonText: 'OK'
+          });
           return;
       }
       // const formattedDateTime = `${year}${month}${date}${now.getHours()}${now.getMinutes()}`;

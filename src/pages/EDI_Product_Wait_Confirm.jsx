@@ -77,7 +77,12 @@ export default function EDI_Product_Wait_Confirm({ onSearch }) {
 
     const exportToExcel = async () => {
         if (distinctPrdWaitConfirm.length === 0) {
-            alert("No data available to export.");
+            Swal.fire({
+              icon: 'warning',
+              title: 'Warning',
+              text: "NO DATA AVAILABLE TO EXPORT.",
+              confirmButtonText: 'OK'
+            });
             return;
         }
         // const formattedDateTime = `${year}${month}${date}${now.getHours()}${now.getMinutes()}`;
@@ -243,7 +248,12 @@ export default function EDI_Product_Wait_Confirm({ onSearch }) {
 
     const handleSendMail = () => {
       if (distinctPrdWaitConfirm.length === 0) {
-        alert("No data available to send mail.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "NO DATA AVAILABLE TO SEND MAIL.",
+          confirmButtonText: 'OK'
+        });
         return;
       }
 
@@ -273,7 +283,12 @@ export default function EDI_Product_Wait_Confirm({ onSearch }) {
         const mailtoLink = `mailto:${recipients.join(";")}?cc=${ccRecipients.join(";")}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
       } else {
-        alert("No email recipients found.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "NO EMAIL RECIPIENTS FOUND.",
+          confirmButtonText: 'OK'
+        });
       }
     };
 

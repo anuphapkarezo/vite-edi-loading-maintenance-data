@@ -69,13 +69,26 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
 
     const fetchProductList = async () => {
         try {
-
-          if (fromDate !== null && toDate !== null){
-            const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-product-list-check-location?start_date=${fromDate}&end_date=${toDate}`);
-            const data  = response.data;
-            // console.log('data' , data);
-            setdistinctProduct(data);
+          let from_Date = '';
+          if (!fromDate) {
+            from_Date = 'ALL';
+          } else {
+            from_Date = fromDate
           }
+
+          let to_Date = '';
+          if (!toDate) {
+            to_Date = 'ALL';
+          } else {
+            to_Date = toDate
+          }
+          
+          // if (fromDate !== null && toDate !== null){
+          const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-product-list-check-location?start_date=${from_Date}&end_date=${to_Date}`);
+          const data  = response.data;
+          // console.log('data' , data);
+          setdistinctProduct(data);
+          // }
         } catch (error) {
           console.error(`Error fetching distinct data Product List: ${error}`);
         }
@@ -83,7 +96,7 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
 
     useEffect(() => {
         fetchProductList();
-    }, [selectedFromDate, selectedToDate, selectedProduct]);
+    }, [selectedFromDate, selectedToDate, selectedProduct, fromDate, toDate]);
 
     const handleNavbarToggle = (openStatus) => {
         setIsNavbarOpen(openStatus);
@@ -109,21 +122,57 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
       // console.log('fromDate' , fromDate);
       // console.log('toDate' , toDate);
       // console.log('productName' , productName);
-      if (fromDate === null && toDate === null){
-        alert("WARNING: PLEASE SELECT RANGE DATE.");
-        return;
+      let from_Date = '';
+      if (!fromDate) {
+        from_Date = 'ALL';
+      } else {
+        from_Date = fromDate
       }
-      if (fromDate === null){
-        alert("WARNING: PLEASE SELECT FROM DATE.");
-        return;
+
+      let to_Date = '';
+      if (!toDate) {
+        to_Date = 'ALL';
+      } else {
+        to_Date = toDate
       }
-      if (toDate === null){
-        alert("WARNING: PLEASE SELECT TO DATE.");
+
+      if (from_Date === 'ALL' && to_Date === 'ALL' && productName === 'ALL PRODUCT') {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'PLEASE SELECT AT LEAST ONE CHOICE.',
+          confirmButtonText: 'OK'
+        });
         return;
       }
 
+      if (from_Date !== 'ALL' && to_Date === 'ALL') {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'PLEASE SELECT TO DATE.',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+
+      if (from_Date === 'ALL' && to_Date !== 'ALL') {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'PLEASE SELECT FROM DATE.',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+      
       if (toDate < fromDate) {
-        alert("WARNING: TO DATE CAN'T BE EARLIER THAN FROM DATE.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "TO DATE CAN'T BE EARLIER THAN FROM DATE.",
+          confirmButtonText: 'OK'
+        });
         setSelectedFromDate(null)
         setSelectedToDate(null)
         return;
@@ -132,7 +181,7 @@ export default function EDI_Check_location_Netterm({ onSearch }) {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `http://10.17.100.115:3001/api/smart_edi/filter-check-location-netterm?start_date=${fromDate}&to_date=${toDate}&prd_name=${productName}`
+          `http://10.17.100.115:3001/api/smart_edi/filter-check-location-netterm?start_date=${from_Date}&to_date=${to_Date}&prd_name=${productName}`
         );
         const data = response.data;
         setdistinctProductCheck(data);

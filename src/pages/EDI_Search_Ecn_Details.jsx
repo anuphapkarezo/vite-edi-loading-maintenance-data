@@ -75,7 +75,6 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
     try {
       setIsLoading(true);
       if (selectedCaseType == 'ALL CASE' && selectedProduct == 'ALL PRODUCT' && selectedEcnNo == 'ALL ECN') {
-        // alert("Please select at least 1 options");
       } 
       else {
         setSelectedValue("")
@@ -110,13 +109,17 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
     try {
       setIsLoading(true);
       if (selectedProduct == 'ALL PRODUCT') {
-        // alert("Please select at least 1 options");
       } 
       else {
         const response = await axios.get(`http://10.17.100.115:3001/api/smart_edi/filter-count-product-fix-leadtime?prd=${selectedProduct}`);
         const count_prd = parseInt(response.data[0].count_prd, 10);
         if (count_prd > 0) {
-          alert("THIS PRODUCT MUST BE FIXED LEADTIME");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: "THIS PRODUCT MUST BE FIXED LEADTIME.",
+            confirmButtonText: 'OK'
+          });
         }
         setdistinctContPrdFixLT(count_prd);
       }
@@ -283,7 +286,12 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
 
   const HandleSaveandCim = async () => {
     if (!distinctEcnKpiDetails || distinctEcnKpiDetails.length === 0) {
-      alert("No data available to process.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: "NO DATA AVAILABLE TO PROCESS.",
+        confirmButtonText: 'OK'
+      });
       return;
     }
   
@@ -312,18 +320,33 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
         const issue_doc = valueFor_pos + valueFor_mos + valueFor_rcs + valueFor_bom;
 
         if (issue_doc === "") {
-          alert("PLEASE CHECK LIST FOR ISSUE DOCUMENT.");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: "PLEASE CHECK LIST FOR ISSUE DOCUMENT.",
+            confirmButtonText: 'OK'
+          });
           return;
         }
 
         if (row.fac_item !== "9V" && valueFor_re_cal === "") {
-          alert("PLEASE CHECK LIST FOR RE-CALCULATE.");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: "PLEASE CHECK LIST FOR RE-CALCULATE.",
+            confirmButtonText: 'OK'
+          });
           return;
         }
 
         const ChkSMT = row.prd_name.charAt(3);
         if (ChkSMT === "Z" && valueFor_smt_finish === "") {
-          alert("PLEASE CHECK LIST FOR SMT FINISH GOODS.");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: "PLEASE CHECK LIST FOR SMT FINISH GOODS.",
+            confirmButtonText: 'OK'
+          });
           return;
         }
 
@@ -359,7 +382,12 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
 
       if (selectedValue[index] === "PROB") {
         if (!selectedTakeNote) {
-          alert("PLEASE SELECT PROBLEM FOR TAKE NOTE.");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: "PLEASE SELECT PROBLEM FOR TAKE NOTE.",
+            confirmButtonText: 'OK'
+          });
           return;
         }
         const url = `http://10.17.100.115:3001/api/smart_edi/filter-count-ecn-by-prd-kpi?ecn_by_prd=${row.ecn_no + row.prd_name}`;
@@ -398,7 +426,12 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
     // console.log('ChkAlert' , ChkAlert);
     
     if (ChkAlert > 0) {
-      alert("SAVED ENTRY DATA SUCCESSFUL.");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "SAVED ENTRY DATA SUCCESSFUL.",
+        confirmButtonText: 'OK'
+      });
       setSelectedValue("")
       setCheckedValues({});
       fetchEcnKpiDetails();
@@ -438,13 +471,23 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
         const mailtoLink = `mailto:${recipients.join(";")}?cc=${ccRecipients.join(";")}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
       } else {
-        alert("No email recipients found.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "NO EMAIL RECIPIENTS FOUND.",
+          confirmButtonText: 'OK'
+        });
       }
       ChkAlert = 0
     }
 
     if (ChkTakeNote > 0) {
-      alert("TAKE NOTE SUCCESSFUL.");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "TAKE NOTE SUCCESSFUL.",
+        confirmButtonText: 'OK'
+      });
       setSelectedTakeNote(null)
       fetchEcnKpiDetails();
       ChkTakeNote = 0
@@ -455,11 +498,21 @@ export default function EDI_Search_Ecn_Details({ onSearch }) {
     console.log('selectedProduct: ',selectedProduct);
     console.log('manualRouting: ',manualRouting);
     if (!selectedProduct) {
-      alert("PLEASE SELECT PRODUCT")
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: "PLEASE SELECT PRODUCT.",
+        confirmButtonText: 'OK'
+      });
       return;
     } 
     if (!manualRouting) {
-      alert("PLEASE INPUT DETAILS FOR CIM MANUAL")
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: "PLEASE INPUT DETAILS FOR CIM MANUAL.",
+        confirmButtonText: 'OK'
+      });
       return;
     } 
 

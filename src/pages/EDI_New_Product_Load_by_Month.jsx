@@ -112,15 +112,30 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
 
     const handleSearch = async () => {
       if (!selectedFromMonth?.month_year && !selectedToMonth?.month_year) {
-        alert("PLEASE SELECT RANGE MONTH.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'PLEASE SELECT RANGE MONTH.',
+          confirmButtonText: 'OK'
+        });
         return;
       }
       if (!selectedFromMonth?.month_year) {
-        alert("PLEASE SELECT > FROM MONTH.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'PLEASE SELECT FROM MONTH.',
+          confirmButtonText: 'OK'
+        });
         return;
       }
       if (!selectedToMonth?.month_year) {
-        alert("PLEASE SELECT > TO MONTH.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'PLEASE SELECT TO MONTH.',
+          confirmButtonText: 'OK'
+        });
         return;
       }
       const FromMonth = selectedFromMonth.month_year
@@ -131,8 +146,12 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
       const fromDate = new Date(formattedFrom.split('/').reverse().join('-')); // "2025-03-01"
       const toDate = new Date(formattedTo.split('/').reverse().join('-'));     // "2025-01-31"
       if (toDate < fromDate) {
-        // alert("Warning: 'ToMonth' cannot be earlier than 'FromMonth'.");
-        alert("WARNING: TO MONTH CAN'T BE EARLIER THAN FROM MONTH.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "TO MONTH CAN'T BE EARLIER THAN FROM MONTH.",
+          confirmButtonText: 'OK'
+        });
         setSelectedFromMonth(null);
         setSelectedToMonth(null);
         return; // Exit function early
@@ -163,8 +182,13 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
 
     const exportToExcel = async () => {
       if (distinctNewProduct.length === 0) {
-          alert("No data available to export.");
-          return;
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "NO DATA AVAILABLE TO EXPORT.",
+          confirmButtonText: 'OK'
+        });
+        return;
       }
       // const formattedDateTime = `${year}${month}${date}${now.getHours()}${now.getMinutes()}`;
   
@@ -288,7 +312,12 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
 
     const handleSendMail = () => {
       if (distinctNewProduct.length === 0) {
-        alert("No data available to send mail.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "NO DATA AVAILABLE TO SEND MAIL.",
+          confirmButtonText: 'OK'
+        });
         return;
       }
       const FromMonth = selectedFromMonth.month_year
@@ -319,7 +348,12 @@ export default function EDI_New_Product_Load_by_Month({ onSearch }) {
         const mailtoLink = `mailto:${recipients.join(";")}?cc=${ccRecipients.join(";")}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
       } else {
-        alert("No email recipients found.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: "NO EMAIL RECIPIENTS FOUND.",
+          confirmButtonText: 'OK'
+        });
       }
     };
 
