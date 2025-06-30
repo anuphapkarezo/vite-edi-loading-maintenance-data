@@ -94,6 +94,51 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
       fetchPrdDailytrend();
     };
 
+    const handleClear = (item) => {
+      const ecn_no = item.ecn_no;
+      const prd_name = item.prd_name;
+      const ecn_by_prd = item.ecn_no + item.prd_name;
+
+      const swalWithZIndex = Swal.mixin({
+        customClass: {
+            popup: 'my-swal-popup', // Define a custom class for the SweetAlert popup
+        },
+      });
+
+      swalWithZIndex.fire({
+      title: "CLEAR DATA",
+      html: `CONFIRM TO CLEAR DATA LOADING?<br>ECN: ${item.ecn_no} // Product: ${item.prd_name}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "YES, CLEAR",
+      cancelButtonText: "CANCEL",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const url_del = (`http://10.17.100.115:3001/api/smart_edi/delete-kpi-data-today?ecn_by_prd=${ecn_by_prd}`);
+          axios.get(url_del)
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "CLEAR SUCCESS",
+              text: "CLEAR DATA LOADING SUCCESSFULLY",
+              confirmButtonText: "OK",
+            });
+            fetchPrdLoadToday();
+            fetchPrdDailytrend();
+          })
+          .catch((error) => {
+            console.error("ERROR CLEAR DATA LOADING:", error);
+            Swal.fire({
+              icon: "error",
+              title: "CLEAR ERROR",
+              text: "AN ERROR OCCURRED WHILE CLEAR data",
+              confirmButtonText: "OK",
+            });
+          });
+        } 
+      });
+    };
+
     const chartOptions = {
       chart: {
         type: 'bar',
@@ -312,11 +357,11 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
             >
                 <img src="/refresh.png" alt="" style={{ width: 50}} />
             </Button> */}
-            <div style={{height: 360, width:1400, display: "flex", flexDirection: "row",}}>
+            <div style={{height: 360, width:1450, display: "flex", flexDirection: "row",}}>
 
               <div style={{
                         height: 350, 
-                        width:1300 , 
+                        width:1350 , 
                         // marginRight: 20, 
                         // marginTop: 5 ,
                         // marginBottom: 5,
@@ -327,7 +372,7 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
               {isLoading ? (
                 <Custom_Progress />
               ) : (
-                  <table style={{width:1275 , borderCollapse: 'collapse',}}>
+                  <table style={{width:1325 , borderCollapse: 'collapse',}}>
                     <thead style={{fontSize: 14, fontWeight: 'bold', position: 'sticky', top: 0, zIndex: 1, }}>
                       <tr>
                       <th
@@ -396,6 +441,17 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
                           >
                             DETAIL OF REVISED
                         </th>
+                        <th
+                          style={{
+                                textAlign: "center",
+                                backgroundColor: "#AED2FF",
+                                height: "45px",
+                                width: "50px",
+                                border: 'solid black 1px',
+                                }}
+                          >
+                            ACTION
+                        </th>
                       </tr>
                     </thead>
                   <tbody style={{fontSize: 15}}>
@@ -451,11 +507,29 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
                                 >
                                 {item.ecn_details?.replace(/[\r\n]+/g, " ") || ""}
                             </td>
+                            <td style={{
+                                border: 'solid black 1px',
+                                textAlign: 'center',
+                                height: "30px",
+                            }}>
+                                <Button
+                                    className="btn_hover"
+                                    onClick={() => {
+                                        handleClear(item);
+                                    }}
+                                    style={{
+                                        minWidth: 'auto',
+                                        padding: '2px',
+                                        height: '26px',
+                                    }}
+                                >
+                                  <img src="/clear1.png" alt="" style={{ height: "20px"}} />
+                                </Button>
+                            </td>
                         </tr>
                     ))}
                   </tbody>
                 </table>
-                
               )}
             </div>
             <div style={{width: 100, }}>
@@ -476,7 +550,7 @@ export default function EDI_Product_Loading_Routing_Today({ onSearch }) {
 
           <div style={{
                       height: 400, 
-                      width:1300 , 
+                      width:1325 , 
                       marginRight: 20, 
                       marginTop: 15 ,
                       overflowY: 'auto', 
